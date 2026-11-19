@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Cosplay } from './types';
+import type { Cosplay, VariantType } from './types';
+import { isVariantType } from './types';
 import { SEEDED_COSPLAYS } from './data';
 
 export const isSupabaseConfigured =
@@ -23,9 +24,22 @@ export function getSupabaseAdminClient(): SupabaseClient | null {
 }
 
 function rowToCosplay(row: Record<string, unknown>): Cosplay {
+  // photo_urls is the source of truth; fall back to the legacy photo_url
+  // for rows written before the v1.1 migration.
+  const photoUrl = (row.photo_url as string | null) ?? null;
+  const rawUrls = row.photo_urls;
+  const photoUrls: string[] = Array.isArray(rawUrls)
+    ? rawUrls.filter((u): u is string => typeof u === 'string' && u.length > 0)
+    : photoUrl
+      ? [photoUrl]
+      : [];
+  const variantType: VariantType = isVariantType(row.variant_type)
+    ? row.variant_type
+    : 'traditional';
   return {
     id: Number(row.id),
     character: String(row.character ?? ''),
+    mainSeries: (row.main_series as string | null) ?? null,
     series: String(row.series ?? ''),
     cosplayer: String(row.cosplayer ?? ''),
     cosplayerHandle: String(row.cosplayer_handle ?? ''),
@@ -34,8 +48,11 @@ function rowToCosplay(row: Record<string, unknown>): Cosplay {
     date: (row.date as string | null) ?? null,
     photographer: (row.photographer as string | null) ?? null,
     photographerUrl: (row.photographer_url as string | null) ?? null,
-    photoUrl: (row.photo_url as string | null) ?? null,
-    hasPhoto: Boolean(row.has_photo),
+    photoUrl: photoUrls[0] ?? photoUrl,
+    photoUrls,
+    hasPhoto: Boolean(row.has_photo) || photoUrls.length > 0,
+    variantType,
+    variantLabel: (row.variant_label as string | null) ?? null,
     isFavorite: Boolean(row.is_favorite),
     isFirstCosplay: Boolean(row.is_first_cosplay),
     notes: (row.notes as string | null) ?? null,

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   description:
     'A searchable, Pinterest-style cosplay database. Search by character or cosplayer, with clear credit and social links. An endless horizon of different characters and different worlds.',
   metadataBase: new URL('https://cosplayhorizons.com'),
+  icons: { icon: '/logo.svg' },
   openGraph: {
     title: 'Cosplay Horizons',
     description: 'Find the cosplayer, not the costume shop.',
@@ -21,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="site">
           <div className="wrap">
             <h1>
-              <Link href="/">Cosplay Horizons</Link>
+              <Link href="/" aria-label="Cosplay Horizons — home">
+                <Logo />
+              </Link>
             </h1>
             <nav aria-label="Main">
               <Link href="/">Gallery</Link>

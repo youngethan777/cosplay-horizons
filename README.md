@@ -5,7 +5,9 @@
 A searchable, Pinterest-style cosplay database — an endless horizon of
 different characters and different worlds, as far as the eye can see.
 
-- Search by character **or** cosplayer, filter by series
+- Search by character **or** cosplayer, filter by series and by variant
+- Up to 5 photos per look (first = cover), with variant tags:
+  Traditional, Christmas, Halloween, or Other (with a custom name)
 - Every look credits the cosplayer (and photographer, when known) with
   social links right there
 - Opt-in only: cosplayers submit their own photos; anyone can ask for a
@@ -17,18 +19,32 @@ Live domain (once deployed): **https://cosplayhorizons.com**
 (domain already bought on Porkbun — do NOT buy Porkbun hosting; the
 domain just needs its DNS pointed at Vercel, step 5 below.)
 
+## Branding (v1.1, Nov 18 2026)
+
+- Colours: turquoise blue / sky blue (`#0ea5e9`, `#0e7490`) paired with
+  emerald green (`#059669`, `#047857`), in `src/app/globals.css`.
+- Logo: `public/logo.svg` — a simple sun-over-horizon mark in those
+  colours, with the "Cosplay Horizons" wordmark (`src/components/Logo.tsx`).
+  It is also the favicon. No mascot yet.
+- Landing page: the homepage explains the site first, then shows an
+  endless gliding cycle of the 6 real photos (`src/components/PhotoMarquee.tsx`).
+  The gallery/search below is unchanged.
+
 ## What is in this repo
 
 | Path | What it is |
 |---|---|
 | `src/app/page.tsx` + `src/components/Gallery.tsx` | Home gallery, search + series filter |
-| `src/app/cosplay/[id]/page.tsx` | Detail view: credit, event/date, photographer, Instagram link |
-| `src/app/submit/page.tsx` + `src/components/SubmitForm.tsx` | Submit form — photo **upload** (JPG/PNG/WebP/GIF, 8 MB), consent required, optional photographer |
+| `src/app/cosplay/[id]/page.tsx` + `src/components/PhotoViewer.tsx` | Detail view: photo viewer (prev/next, counter, thumbnails), variant tag, credit, event/date, photographer, Instagram link |
+| `src/app/submit/page.tsx` + `src/components/SubmitForm.tsx` | Submit form — up to 5 photo **uploads** (JPG/PNG/WebP/GIF, 8 MB each), reorder/remove/pick cover, variant selection, consent required, optional photographer |
+| `src/components/Logo.tsx`, `public/logo.svg` | Logo (wordmark + sun-over-horizon mark, sky blue/turquoise + emerald); also the favicon. No mascot yet — that is a later idea. |
+| `src/components/PhotoMarquee.tsx` | Landing-page endless photo cycle (the 6 real photos, looped, pauses on hover) |
 | `src/app/takedown/page.tsx` + `src/components/TakedownForm.tsx` | Takedown form, pre-filled from any entry, 48-hour promise |
 | `src/app/privacy/page.tsx`, `src/app/terms/page.tsx` | Trust pages |
 | `src/lib/data.ts` | Seeded v1 data — 13 entries (6 real photos, 7 placeholders) |
 | `public/photos/` | The 6 real photos, resized to max 1200 px, ~110–320 KB each |
 | `supabase/schema.sql`, `supabase/seed.sql` | Database tables, RLS, seed data, storage bucket notes |
+| `supabase/migration-2026-11-18-multi-photo-variants.sql` | **v1.1 migration for the existing live project** — run in Supabase SQL Editor before the next redeploy (see §3). Fresh databases do not need it; `schema.sql` already includes the new columns. |
 | `.env.example` | Env vars to copy — **no real keys in this repo** |
 
 ### The 13 seeded entries
@@ -101,6 +117,18 @@ npm run build   # must pass before deploying
 2. Go to **SQL Editor → New query**, paste `supabase/schema.sql`, Run.
    Then a new query, paste `supabase/seed.sql`, Run.
    Check **Table Editor → cosplays** shows 13 rows.
+
+> **v1.1 — existing live project only:** the live project was created
+> from the v1 schema, so before the next redeploy, run
+> `supabase/migration-2026-11-18-multi-photo-variants.sql` in the SQL
+> Editor too. It adds `photo_urls`, `photo_paths`, `photo_file_names`,
+> `variant_type` and `variant_label`, backfills them from the
+> single-photo columns, backfills `main_series`, and sets id 3 (Agate,
+> Trails cupsleeve) to variant `other` / `Cupsleeve` (12 traditional +
+> 1 other), and adds a `variant_type` index. It is safe to re-run. Then
+> verify with:
+> `select variant_type, count(*) from public.cosplays group by variant_type;`
+> — expect 12 traditional + 1 other (id 3, Cupsleeve). Do **not** run it on a fresh database.
 3. Go to **Storage → New bucket**:
    - Name: `cosplay-photos`
    - Public bucket: **ON**

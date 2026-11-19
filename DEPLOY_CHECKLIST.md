@@ -33,6 +33,12 @@ boxes above it are done.
 - [ ] Storage: create public bucket `cosplay-photos`, 8 MB limit, JPG/PNG/WebP/GIF only
 - [ ] Copy Project URL, anon key, service_role key from Settings → API
 
+## 3b. v1.1 migration (existing live project only — run before redeploy)
+- [ ] Supabase → SQL Editor: run `supabase/migration-2026-11-18-multi-photo-variants.sql`
+- [ ] Verify: `select variant_type, count(*) from public.cosplays group by variant_type;` → 12 traditional + 1 other (Cupsleeve)
+- [ ] Verify: the 6 rows with a photo each have `photo_urls` with exactly 1 entry
+- [ ] (Fresh databases skip this — `supabase/schema.sql` already includes the new columns)
+
 ## 4. Connect Vercel ↔ Supabase
 - [ ] Vercel → Settings → Environment Variables, add:
   - [ ] `NEXT_PUBLIC_SUPABASE_URL`

@@ -9,6 +9,8 @@ create extension if not exists "pgcrypto";
 create table if not exists public.cosplays (
   id integer primary key,
   character text not null,
+  -- v1.1 follow-up: wide category, e.g. 'Trails'; series is the specific series.
+  main_series text,
   series text not null,
   cosplayer text not null,
   cosplayer_handle text not null default '',
@@ -18,6 +20,10 @@ create table if not exists public.cosplays (
   photographer text,
   photographer_url text,
   photo_url text,
+  -- v1.1: all photos, first = cover. photo_url is kept as the cover.
+  photo_urls text[] not null default '{}',
+  variant_type text not null default 'traditional' check (variant_type in ('traditional', 'christmas', 'halloween', 'other')),
+  variant_label text,
   has_photo boolean not null default false,
   is_favorite boolean not null default false,
   is_first_cosplay boolean not null default false,
@@ -30,6 +36,7 @@ create table if not exists public.cosplays (
 create table if not exists public.submissions (
   id uuid primary key default gen_random_uuid(),
   character text not null,
+  main_series text,
   series text not null,
   cosplayer text not null,
   instagram_url text,
@@ -39,6 +46,13 @@ create table if not exists public.submissions (
   photographer_url text,
   photo_path text,
   photo_file_name text,
+  -- v1.1: all uploaded photos, first = cover; names in the same order.
+  photo_paths text[] not null default '{}',
+  photo_file_names text[] not null default '{}',
+  variant_type text not null default 'traditional' check (variant_type in ('traditional', 'christmas', 'halloween', 'other')),
+  variant_label text,
+  -- v1.1 follow-up: submitter confirmed the character has no last name.
+  no_last_name boolean not null default false,
   consent boolean not null default false,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now()
@@ -88,6 +102,9 @@ create policy "Anyone can insert takedown requests"
 create index if not exists cosplays_character_idx on public.cosplays (lower(character));
 create index if not exists cosplays_cosplayer_idx on public.cosplays (lower(cosplayer));
 create index if not exists cosplays_series_idx on public.cosplays (series);
+create index if not exists cosplays_main_series_idx on public.cosplays (main_series);
+create index if not exists cosplays_variant_type_idx on public.cosplays (variant_type);
+create index if not exists submissions_variant_type_idx on public.submissions (variant_type);
 create index if not exists submissions_status_idx on public.submissions (status);
 create index if not exists takedowns_status_idx on public.takedown_requests (status);
 

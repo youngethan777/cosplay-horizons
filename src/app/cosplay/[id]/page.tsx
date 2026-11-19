@@ -1,7 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { loadCosplayById, loadCosplays } from '@/lib/supabase';
+import { getCoverPhoto, getPhotoUrls, variantDisplayName } from '@/lib/types';
+import PhotoViewer from '@/components/PhotoViewer';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,8 @@ export default async function CosplayDetailPage({
   const id = Number(params.id);
   const cosplay = await loadCosplayById(id);
   if (!cosplay) notFound();
+  const photos = getPhotoUrls(cosplay);
+  const cover = getCoverPhoto(cosplay);
 
   return (
     <article>
@@ -28,13 +31,10 @@ export default async function CosplayDetailPage({
       </p>
       <div className="detail">
         <div>
-          {cosplay.hasPhoto && cosplay.photoUrl ? (
-            <Image
-              src={cosplay.photoUrl}
+          {cosplay.hasPhoto && cover ? (
+            <PhotoViewer
+              photos={photos}
               alt={`${cosplay.character} cosplay by ${cosplay.cosplayer}`}
-              width={900}
-              height={1200}
-              priority
             />
           ) : (
             <div
@@ -55,6 +55,11 @@ export default async function CosplayDetailPage({
           <p>
             {cosplay.isFavorite && <span className="badge gold">★ Favourite</span>}
             {cosplay.isFirstCosplay && <span className="badge">First cosplay</span>}
+            {cosplay.variantType !== 'traditional' && (
+              <span className="badge">
+                {variantDisplayName(cosplay.variantType, cosplay.variantLabel)}
+              </span>
+            )}
           </p>
           <dl>
             <dt>Cosplayer</dt>
