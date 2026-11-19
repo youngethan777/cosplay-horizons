@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { unstable_noStore as noStore } from 'next/cache';
 import type { Cosplay, VariantType } from './types';
 import { isVariantType } from './types';
 import { SEEDED_COSPLAYS } from './data';
@@ -65,6 +66,8 @@ function rowToCosplay(row: Record<string, unknown>): Cosplay {
  * connecting Supabase, and the site never breaks if Supabase is down.
  */
 export async function loadCosplays(): Promise<Cosplay[]> {
+    // Fetch live on every load, no Data Cache.
+    noStore();
   const client = getSupabaseClient();
   if (!client) return SEEDED_COSPLAYS;
   const { data, error } = await client
