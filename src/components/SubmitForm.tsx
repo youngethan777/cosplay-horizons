@@ -7,6 +7,62 @@ import { checkCharacterLastName } from '@/lib/known-characters';
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_BYTES = 8 * 1024 * 1024;
 const MAX_PHOTOS = 5;
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.85;
+const SMALL_BYTES = 1024 * 1024;
+
+// Resize and re-encode a photo in the browser before it is sent, so large
+// phone photos stay well under the server request size limit. The preview
+// thumbnails still use the original files. Anything that cannot be decoded
+// here (for example HEIC in a browser without HEIC support) is sent
+// unchanged so the server validation message applies. GIF files are sent
+// unchanged so animation is not lost. PNG transparency is flattened onto
+// a white background by the JPEG export.
+async function compressPhoto(file: File): Promise<File> {
+  if (file.type === 'image/gif') return file;
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('decode failed'));
+      img.src = url;
+    });
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    if (!width || !height) return file;
+    const longest = Math.max(width, height);
+    if (
+      file.type === 'image/jpeg' &&
+      file.size < SMALL_BYTES &&
+      longest <= MAX_DIMENSION
+    ) {
+      return file;
+    }
+    const scale = Math.min(1, MAX_DIMENSION / longest);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY),
+    );
+    if (!blob) return file;
+    const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
+    return new File([blob], `${base}.jpg`, {
+      type: 'image/jpeg',
+      lastModified: file.lastModified,
+    });
+  } catch {
+    return file;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
 
 type PreviewFile = { file: File; preview: string };
 
@@ -113,17 +169,24 @@ export default function SubmitForm() {
     data.set('character', character.trim());
     data.set('mainSeries', mainSeries.trim());
     data.set('noLastName', noLastName ? 'true' : 'false');
-    // Rebuild the photo fields in display order (first = cover).
-    data.delete('photo');
-    for (const { file } of files) data.append('photo', file);
     data.set('variantType', variantType);
     data.set('variantLabel', variantType === 'other' ? variantLabel.trim() : '');
     setBusy(true);
     try {
+      // Rebuild the photo fields in display order (first = cover), resizing
+      // each photo first so the request stays under the server size limit.
+      data.delete('photo');
+      for (const { file } of files) {
+        data.append('photo', await compressPhoto(file));
+      }
       const res = await fetch('/api/submissions', { method: 'POST', body: data });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(json.error || 'Something went wrong. Please try again.');
+        if (res.status === 413) {
+          setError('Those photos are too large to send together. Please try fewer photos, or smaller ones.');
+        } else {
+          setError(json.error || 'Something went wrong. Please try again.');
+        }
         return;
       }
       setSuccess(
@@ -157,8 +220,9 @@ export default function SubmitForm() {
         Photos, upload from your camera roll or files
         <span className="hint">
           Up to {MAX_PHOTOS} photos, JPG, PNG, WebP, or GIF, up to 8 MB each.
-          The first photo is the cover shown in the gallery; you can reorder
-          them below. These are the photos we will show, not a link.
+          Photos are resized automatically before they are sent. The first
+          photo is the cover shown in the gallery; you can reorder them
+          below. These are the photos we will show, not a link.
         </span>
         <input
           ref={inputRef}
