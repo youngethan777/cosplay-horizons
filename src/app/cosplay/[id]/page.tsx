@@ -53,8 +53,6 @@ export default async function CosplayDetailPage({
           <h2 style={{ marginTop: 0 }}>{cosplay.character}</h2>
           <p style={{ color: 'var(--muted)' }}>{cosplay.series}</p>
           <p>
-            {cosplay.isFavorite && <span className="badge gold">★ Favourite</span>}
-            {cosplay.isFirstCosplay && <span className="badge">First cosplay</span>}
             {cosplay.variantType !== 'traditional' && (
               <span className="badge">
                 {variantDisplayName(cosplay.variantType, cosplay.variantLabel)}

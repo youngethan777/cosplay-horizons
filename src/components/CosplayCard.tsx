@@ -38,8 +38,6 @@ export function CosplayCard({ cosplay }: { cosplay: Cosplay }) {
           {cosplay.cosplayer} · {cosplay.cosplayerHandle}
         </p>
         <p>
-          {cosplay.isFavorite && <span className="badge gold">★ Favourite</span>}
-          {cosplay.isFirstCosplay && <span className="badge">First cosplay</span>}
           {cosplay.variantType !== 'traditional' && (
             <span className="badge">
               {variantDisplayName(cosplay.variantType, cosplay.variantLabel)}
