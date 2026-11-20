@@ -1,10 +1,8 @@
 import Image from 'next/image';
 
 /**
- * Cosplay Horizons logo (v1.1, Nov 18 2026) — a simple wordmark with a
- * sun-over-horizon mark in the site colours (sky blue / turquoise and
- * emerald green). This is a logo, NOT a mascot — the mascot is a later
- * idea. No face, no character.
+ * Cosplay Horizons logo: sun-over-horizon symbol with bubble text.
+ * The symbol stays as the site mark. A mascot is a later idea, not now.
  */
 export default function Logo() {
   return (
@@ -12,8 +10,8 @@ export default function Logo() {
       <Image
         src="/logo.svg"
         alt=""
-        width={40}
-        height={40}
+        width={64}
+        height={64}
         priority
         aria-hidden="true"
       />

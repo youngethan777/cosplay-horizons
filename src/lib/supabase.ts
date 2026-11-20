@@ -1,5 +1,5 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { unstable_noStore as noStore } from 'next/cache';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Cosplay, VariantType } from './types';
 import { isVariantType } from './types';
 import { SEEDED_COSPLAYS } from './data';
@@ -8,7 +8,7 @@ export const isSupabaseConfigured =
   Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
   Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-/** Browser / server client (anon key only — safe to expose). */
+/** Browser / server client (anon key only, safe to expose). */
 export function getSupabaseClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -62,12 +62,11 @@ function rowToCosplay(row: Record<string, unknown>): Cosplay {
 
 /**
  * Load approved cosplays. Uses Supabase when configured, otherwise falls
- * back to the seeded local data — so Ethan can preview the site before
+ * back to the seeded local data, so Ethan can preview the site before
  * connecting Supabase, and the site never breaks if Supabase is down.
  */
 export async function loadCosplays(): Promise<Cosplay[]> {
-    // Fetch live on every load, no Data Cache.
-    noStore();
+  noStore();
   const client = getSupabaseClient();
   if (!client) return SEEDED_COSPLAYS;
   const { data, error } = await client

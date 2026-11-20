@@ -35,7 +35,7 @@ export function variantDisplayName(
 export type Cosplay = {
   id: number;
   character: string;
-  /** Wide category, e.g. "Trails" — series is the specific series. */
+  /** Wide category, e.g. "Trails". Series is the specific series. */
   mainSeries: string | null;
   /** Specific series, e.g. "Trails in the Sky". */
   series: string;
@@ -46,7 +46,7 @@ export type Cosplay = {
   date: string | null;
   photographer: string | null;
   photographerUrl: string | null;
-  /** Cover photo — kept for backward compatibility. Always photoUrls[0]. */
+  /** Cover photo, kept for backward compatibility. Always photoUrls[0]. */
   photoUrl: string | null;
   /** All photos, first = cover. Backfilled from photoUrl when absent. */
   photoUrls: string[];
@@ -85,7 +85,7 @@ export type Submission = {
   date: string | null;
   photographer: string | null;
   photographerUrl: string | null;
-  /** Cover photo path in storage (first of photoPaths) — legacy field. */
+  /** Cover photo path in storage (first of photoPaths), legacy field. */
   photoPath?: string | null;
   /** All uploaded photo paths in storage, first = cover. */
   photoPaths: string[];

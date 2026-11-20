@@ -23,7 +23,7 @@ export default function Gallery({
   specificSeriesByMain?: Record<string, string[]>;
 }) {
   const [query, setQuery] = useState('');
-  // Series filters are plain text boxes (Ethan, Nov 18) — not
+  // Series filters are plain text boxes (Ethan, Nov 18), not
   // dropdowns, selects, or checkboxes. Empty text means no filter.
   // The two boxes are independent: typing in Main never clears
   // Specific, and both filters apply when both are filled.
@@ -32,7 +32,7 @@ export default function Gallery({
   const [variant, setVariant] = useState<VariantFilter>('All looks');
 
   const mains = mainSeriesList ?? [];
-  // Datalist suggestions only — the user can type anything.
+  // Datalist suggestions only. The user can type anything.
   // Specific suggestions are the full list of specific series.
   const specificOptions = seriesList;
 
@@ -80,7 +80,7 @@ export default function Gallery({
             <span className="count">Specific series (optional)</span>
             <input
               type="text"
-              placeholder="e.g. Trails in the Sky"
+              placeholder="e.g. Fire Emblem Three Houses"
               value={specificSeries}
               onChange={(e) => setSpecificSeries(e.target.value)}
               list="specific-series-filter"
@@ -121,7 +121,7 @@ export default function Gallery({
       {filtered.length === 0 ? (
         <p>
           No looks match that search yet. Try a different character or
-          cosplayer, or <a href="/submit">submit a cosplay</a>.
+          cosplayer, or <a href="/submit">make a submission</a>.
         </p>
       ) : (
         <div className="masonry">

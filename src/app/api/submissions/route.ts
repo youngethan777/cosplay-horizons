@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdminClient } from '@/lib/supabase';
+import { notifyNewSubmission } from '@/lib/notify';
 import { isVariantType } from '@/lib/types';
 import type { VariantType } from '@/lib/types';
 
@@ -116,5 +117,15 @@ export async function POST(req: Request) {
   if (insertError) {
     return NextResponse.json({ error: 'Could not save the submission. Please try again.' }, { status: 500 });
   }
+  // Owner-side notification only. The helper never throws, so a
+  // notification failure cannot fail the submission.
+  await notifyNewSubmission({
+    character,
+    series,
+    cosplayer,
+    photoCount: photoPaths.length,
+    variantType,
+    variantLabel,
+  });
   return NextResponse.json({ ok: true, photoCount: photoPaths.length });
 }

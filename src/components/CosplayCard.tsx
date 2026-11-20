@@ -25,7 +25,7 @@ export function CosplayCard({ cosplay }: { cosplay: Cosplay }) {
           )}
         </div>
       ) : (
-        <div className="placeholder" role="img" aria-label={`Placeholder — photo coming soon for ${cosplay.character}`}>
+        <div className="placeholder" role="img" aria-label={`Placeholder, photo coming soon for ${cosplay.character}`}>
           <span className="big" aria-hidden="true">🎭</span>
           <strong>Photo coming soon</strong>
           <span>{cosplay.character}</span>

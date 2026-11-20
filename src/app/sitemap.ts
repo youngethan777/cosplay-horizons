@@ -6,9 +6,8 @@ export default async function sitemap() {
   return [
     { url: `${base}/`, lastModified: new Date() },
     { url: `${base}/submit`, lastModified: new Date() },
-    { url: `${base}/takedown`, lastModified: new Date() },
+    { url: `${base}/remove`, lastModified: new Date() },
     { url: `${base}/privacy`, lastModified: new Date() },
-    { url: `${base}/terms`, lastModified: new Date() },
     ...cosplays.map((c) => ({
       url: `${base}/cosplay/${c.id}`,
       lastModified: new Date(),

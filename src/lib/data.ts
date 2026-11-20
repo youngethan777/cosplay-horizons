@@ -1,9 +1,9 @@
 import type { Cosplay } from './types';
 
 /**
- * Seeded v1 data — the 13 looks from Ethan's prototype, frozen Nov 16, 2026.
+ * Seeded v1 data, the 13 looks from Ethan's prototype, frozen Nov 16, 2026.
  *
- * PHOTO MAPPING — verified, do not change without Ethan's say-so.
+ * PHOTO MAPPING, verified, do not change without Ethan's say-so.
  * A previous mis-identification was caught by audit, so this is explicit:
  *   Naofumi Iwatani = green cape + Legendary Shield (NOT Leon)
  *   Neptune (RWBY)  = blue hair, red jacket, trident (NOT Ryusui)
@@ -18,7 +18,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Leon Strohl',
     series: 'Metaphor: ReFantazio',
     mainSeries: 'Metaphor: ReFantazio',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Metaphor concert',
@@ -39,7 +39,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Leon Strohl',
     series: 'Metaphor: ReFantazio',
     mainSeries: 'Metaphor: ReFantazio',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Anime Expo 2026',
@@ -60,7 +60,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Agate Crosner',
     series: 'Trails in the Sky',
     mainSeries: 'Trails',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Trails cupsleeve event',
@@ -81,7 +81,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Agate Crosner',
     series: 'Trails in the Sky',
     mainSeries: 'Trails',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Anime Expo 2026',
@@ -102,7 +102,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Akihiko Sanada',
     series: 'Persona 3',
     mainSeries: 'Persona',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Anime Expo 2026',
@@ -123,7 +123,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Ryusui Nanami',
     series: 'Dr. Stone',
     mainSeries: 'Dr. Stone',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Anime Expo 2026',
@@ -144,7 +144,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Naofumi Iwatani',
     series: 'The Rising of the Shield Hero',
     mainSeries: 'The Rising of the Shield Hero',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -165,7 +165,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Neptune',
     series: 'RWBY',
     mainSeries: 'RWBY',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -186,7 +186,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Satoshi Isshiki',
     series: 'Food Wars!',
     mainSeries: 'Food Wars!',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -207,7 +207,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Ray Cro Glamor',
     series: 'D&D original',
     mainSeries: 'Dungeons & Dragons',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -221,14 +221,14 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     variantLabel: null,
     isFavorite: false,
     isFirstCosplay: false,
-    notes: 'Original character — generic rogue / archer based on Ethan’s D&D character.',
+    notes: 'Original character, generic rogue / archer based on Ethan’s D&D character.',
   },
   {
     id: 11,
     character: 'Kamen Rider Wizard',
     series: 'Kamen Rider Wizard',
     mainSeries: 'Kamen Rider',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -249,7 +249,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Link',
     series: 'The Legend of Zelda',
     mainSeries: 'The Legend of Zelda',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: null,
@@ -270,7 +270,7 @@ export const SEEDED_COSPLAYS: Cosplay[] = [
     character: 'Izaya Orihara',
     series: 'Durarara!!',
     mainSeries: 'Durarara!!',
-    cosplayer: 'Ethan Young',
+    cosplayer: 'Camel438',
     cosplayerHandle: '@camelcosplays',
     instagramUrl: 'https://www.instagram.com/camelcosplays',
     event: 'Anime Expo 2016',
@@ -292,7 +292,7 @@ export const SERIES_LIST: string[] = Array.from(
   new Set(SEEDED_COSPLAYS.map((c) => c.series)),
 ).sort();
 
-/** Wide categories, e.g. "Trails" — each groups one or more specific series. */
+/** Wide categories, e.g. "Trails". Each groups one or more specific series. */
 export const MAIN_SERIES_LIST: string[] = Array.from(
   new Set(SEEDED_COSPLAYS.map((c) => c.mainSeries).filter((m): m is string => Boolean(m))),
 ).sort();

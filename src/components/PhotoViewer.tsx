@@ -21,7 +21,7 @@ export default function PhotoViewer({
       <div className="viewer-main">
         <Image
           src={photos[index]}
-          alt={total > 1 ? `${alt} — photo ${index + 1} of ${total}` : alt}
+          alt={total > 1 ? `${alt}, photo ${index + 1} of ${total}` : alt}
           width={900}
           height={1200}
           priority

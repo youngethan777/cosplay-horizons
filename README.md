@@ -199,3 +199,115 @@ See `DEPLOY_CHECKLIST.md` for a tick-box version of all of this.
 
 Next.js 14 (App Router, TypeScript) · React 18 · Supabase
 (Postgres + Storage) · Vercel hosting · Mobile-first, no ads.
+
+## Admin API (private)
+
+The site has a private admin API under `/api/admin/` for reviewing
+submissions and removal requests without opening the Supabase
+dashboard. There is no admin page on the public site and no link to
+it anywhere. Every admin route needs a secret key.
+
+### Setup
+
+1. Generate a secret: `openssl rand -hex 32`
+2. In Vercel, add it as the `COSPLAY_ADMIN_SECRET` environment
+   variable for Production (and Preview if wanted), then redeploy.
+3. Share the secret with Hermes through Secure Vault only. Never
+   put it in chat, never commit it, and never put it in a
+   `NEXT_PUBLIC_*` variable.
+4. When `COSPLAY_ADMIN_SECRET` is not set, the admin API fails
+   closed with 503. A wrong or missing secret returns 401.
+
+Send the secret in the `x-admin-secret` header, or as
+`Authorization: Bearer <secret>`. The examples below use the
+placeholder `YOUR_SECRET_HERE`.
+
+### Endpoints
+
+- `GET /api/admin/submissions?status=pending` lists submissions,
+  newest first, up to 100. The status defaults to pending.
+- `POST /api/admin/submissions/<id>/approve` publishes a submission
+  into the gallery and marks the submission approved. Approving an
+  already approved submission returns ok with a note and does not
+  insert a duplicate.
+- `POST /api/admin/submissions/<id>/reject` marks a submission
+  rejected.
+- `GET /api/admin/removals?status=open` lists removal requests,
+  newest first, up to 100. The status defaults to open.
+- `POST /api/admin/removals/<id>/hide` hides the named cosplay, if
+  any, and marks the request actioned.
+- `POST /api/admin/removals/<id>/decline` marks the request declined
+  and leaves the cosplay unchanged.
+- `POST /api/admin/cosplays/<id>/hide` hides one cosplay.
+- `POST /api/admin/cosplays/<id>/restore` puts a hidden cosplay back
+  to approved.
+
+Hide is always reversible. Nothing in the admin API deletes a
+cosplay, a submission, or a photo.
+
+### Curl examples
+
+```sh
+# List pending submissions
+curl -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/submissions
+
+# Approve one submission
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/submissions/SUBMISSION_ID/approve
+
+# Reject one submission
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/submissions/SUBMISSION_ID/reject
+
+# List open removal requests
+curl -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/removals
+
+# Hide the cosplay named in a removal request
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/removals/REMOVAL_ID/hide
+
+# Decline a removal request
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/removals/REMOVAL_ID/decline
+
+# Hide or restore one cosplay directly
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/cosplays/3/hide
+curl -X POST -H "x-admin-secret: YOUR_SECRET_HERE" \
+  https://www.cosplayhorizons.com/api/admin/cosplays/3/restore
+```
+
+### Notifications
+
+New submissions and removal requests can notify the owner side.
+Submitters never receive these notifications. Pick one option:
+
+- Resend email: set `RESEND_API_KEY` and `NOTIFY_EMAIL_FROM`. Mail
+  goes to `NOTIFY_EMAIL_TO`, or to cosplayhorizons@muse.ai when
+  `NOTIFY_EMAIL_TO` is unset.
+- Webhook: set `NOTIFY_WEBHOOK_URL` and the same summary is POSTed
+  there as JSON.
+
+With neither option set, no notification is sent. A notification
+failure never blocks a submission or a removal request.
+
+### Auto-hide on removal
+
+When `AUTO_HIDE_ON_REMOVAL` is exactly `true`, a removal request
+that names a cosplay hides that cosplay right away, before review.
+The default is off. Hide is reversible with the restore endpoint
+above, and nothing is deleted.
+
+### Display name update at deploy time
+
+The seeded entries in `src/lib/data.ts` and `supabase/seed.sql` now
+use the display name Camel438. The live database still has the old
+name until this SQL is run once in the Supabase SQL Editor at deploy
+time:
+
+```sql
+update public.cosplays set cosplayer = 'Camel438' where cosplayer = 'Ethan Young';
+update public.submissions set cosplayer = 'Camel438' where cosplayer = 'Ethan Young';
+```

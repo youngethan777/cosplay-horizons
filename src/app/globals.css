@@ -1,4 +1,4 @@
-/* Cosplay Horizons palette (v1.1, Nov 18 2026 — Ethan's choice):
+/* Cosplay Horizons palette (v1.1, Nov 18 2026, Ethan's choice):
    turquoise blue / sky blue paired with emerald green.
    Dark shades are used for text, links and buttons so contrast stays
    readable on light backgrounds; light shades are only backgrounds. */
@@ -28,15 +28,31 @@ body {
 }
 a { color: var(--accent); }
 a:hover { text-decoration: underline; }
-header.site { background: #fff; border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, var(--sky), var(--emerald)) 1; position: sticky; top: 0; z-index: 10; }
-.logo { display: inline-flex; align-items: center; gap: 10px; }
-.logo img { border-radius: 10px; display: block; }
-.logo-word { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
-.logo-word-emerald { color: var(--emerald); }
-header.site .wrap { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-header.site h1 { font-size: 1.35rem; margin: 0; }
-header.site h1 a { color: var(--ink); text-decoration: none; }
-header.site nav { display: flex; gap: 14px; margin-left: auto; font-size: 0.95rem; }
+header.site { background: #fff; }
+.banner { max-width: 1100px; margin: 0 auto; padding: 20px 16px 14px; text-align: center; }
+.logo { display: inline-flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.logo img { border-radius: 14px; display: block; width: 64px; height: 64px; }
+.logo-word {
+  font-family: var(--font-bubble), system-ui, sans-serif;
+  font-size: clamp(2.1rem, 8vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  background: linear-gradient(90deg, var(--accent), var(--sky) 45%, var(--emerald));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.logo-word-emerald { color: transparent; }
+header.site h1 { margin: 0; }
+header.site h1 a { text-decoration: none; }
+.main-nav { background: var(--accent); position: sticky; top: 0; z-index: 10; }
+.nav-wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; display: flex; gap: 4px; flex-wrap: wrap; }
+.main-nav a {
+  color: #fff; text-decoration: none; font-weight: 600; font-size: 0.98rem;
+  padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center;
+}
+.main-nav a:hover { background: rgba(255, 255, 255, 0.14); text-decoration: none; }
 main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 64px; }
 .hero { margin: 8px 0 20px; }
 .hero-points { margin: 16px 0 0; padding-left: 20px; color: var(--muted); max-width: 68ch; display: grid; gap: 6px; }
@@ -50,8 +66,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 64px; }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 @keyframes marquee-slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
-.hero h2 { font-size: 1.9rem; line-height: 1.15; margin: 0 0 8px; }
-.hero p { color: var(--muted); margin: 0; max-width: 68ch; }
+.hero h2 { font-size: 1.9rem; line-height: 1.15; margin: 0 0 12px; }
+.hero p { color: var(--muted); margin: 0 0 12px; max-width: 68ch; }
 .controls { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
 .controls input[type="search"], .controls input[type="text"], .controls select {
   width: 100%; padding: 12px 14px; font-size: 1rem; border: 1px solid var(--line);
@@ -115,7 +131,7 @@ form.stack label .hint { font-weight: 400; color: var(--muted); font-size: 0.88r
 form.stack input, form.stack select, form.stack textarea {
   padding: 11px 12px; font-size: 1rem; border: 1px solid var(--line); border-radius: 10px; width: 100%;
 }
-form.stack input[type="checkbox"] { width: auto; }
+form.stack input[type="checkbox"], form.stack input[type="radio"] { width: auto; }
 .check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400 !important; }
 .error { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 10px; }
 .success { color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 12px; border-radius: 10px; }
@@ -156,9 +172,12 @@ form.stack input[type="checkbox"] { width: auto; }
 .preview-item .actions { display: flex; flex-direction: column; gap: 6px; }
 .preview-item .actions button { padding: 4px 8px; font-size: 0.85rem; }
 .cover-tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: #134e4a; }
-fieldset.variant { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 8px; }
+fieldset.variant { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 8px; justify-items: start; text-align: left; }
 fieldset.variant legend { font-weight: 600; font-size: 0.95rem; padding: 0 6px; }
-fieldset.variant label { display: flex; gap: 8px; align-items: center; font-weight: 400; }
+fieldset.variant label { display: flex; gap: 8px; align-items: center; justify-content: flex-start; font-weight: 400; width: 100%; text-align: left; }
+fieldset.variant label span { flex: 1 1 auto; }
+fieldset.variant input[type="radio"] { width: auto; flex: 0 0 auto; margin: 0; }
+fieldset.variant input[type="text"], fieldset.variant input:not([type="radio"]) { width: 100%; }
 footer.site { border-top: 1px solid var(--line); background: #fff; }
 footer.site .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px; color: var(--muted); font-size: 0.9rem; display: flex; gap: 16px; flex-wrap: wrap; }
 .prose { max-width: 72ch; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
@@ -166,9 +185,10 @@ footer.site .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px; color
 
 @media (max-width: 700px) {
   .hero h2 { font-size: 1.55rem; }
-  header.site .wrap { gap: 10px; }
-  header.site nav { font-size: 0.9rem; gap: 10px; }
-  .logo-word { font-size: 1.15rem; }
+  .banner { padding: 16px 12px 10px; }
+  .logo { gap: 10px; }
+  .logo img { width: 48px; height: 48px; }
+  .main-nav a { font-size: 0.92rem; padding: 12px 10px; }
   .marquee-track img { width: 140px; height: 186px; }
   .marquee-track { animation-duration: 36s; }
   .filters button { padding: 10px 14px; }

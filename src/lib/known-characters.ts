@@ -1,5 +1,5 @@
 /**
- * Known characters — starter list for the submission form's last-name
+ * Known characters, starter list for the submission form's last-name
  * check. NOT exhaustive: it only covers characters Ethan has seeded or
  * named so far. Add to it as new full names are confirmed; never guess
  * a last name for a character who is not in this list.
@@ -51,10 +51,10 @@ export function findKnownCharacterByFirstName(
  * What the form should do with a typed character name.
  * - 'full-name-match': the typed name already is a known full name.
  * - 'suggest': a single first name matching a known character with a
- *   last name — offer "Did you mean <full name>?"
+ *   last name. Offer "Did you mean <full name>?"
  * - 'single-word-known': a single word that is a known character with
- *   no last name — no warning needed.
- * - 'unknown-single': a single word with no known match — gentle note
+ *   no last name. No warning needed.
+ * - 'unknown-single': a single word with no known match. Gentle note
  *   only, never a guess.
  * - 'none': anything else (e.g. a multi-word name we do not know).
  */

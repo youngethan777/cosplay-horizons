@@ -21,7 +21,7 @@ export default function TakedownForm({ cosplay }: { cosplay: Cosplay | null }) {
       const res = await fetch('/api/takedowns', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) { setError(json.error || 'Something went wrong. Please try again.'); return; }
-      setSuccess(json.preview ? 'Request received in preview mode. It is not saved to a database yet: connect Supabase (see README) to save takedown requests. In the live site, we promise to act within 48 hours.' : 'Request received. We will act within 48 hours and contact you at the address you gave us.');
+      setSuccess(json.preview ? 'Request received.' : 'Request received. We aim to act as soon as we can, usually within 48 hours, and will contact you at the address you gave us.');
       (e.target as HTMLFormElement).reset();
     } catch { setError('Something went wrong. Please try again.'); } finally { setBusy(false); }
   }
@@ -30,7 +30,7 @@ export default function TakedownForm({ cosplay }: { cosplay: Cosplay | null }) {
       {error && <p className="error" role="alert">{error}</p>}
       {success && <p className="success" role="status">{success}</p>}
       {cosplay ? (
-        <p><strong>Photo:</strong> {cosplay.character} — {cosplay.series}, cosplayed by {cosplay.cosplayer} ({cosplay.cosplayerHandle})</p>
+        <p><strong>Photo:</strong> {cosplay.character}, {cosplay.series}, cosplayed by {cosplay.cosplayer} ({cosplay.cosplayerHandle})</p>
       ) : (
         <label>Which photo is this about?
           <span className="hint">If you came from a gallery entry, this is filled in for you.</span>
@@ -39,12 +39,12 @@ export default function TakedownForm({ cosplay }: { cosplay: Cosplay | null }) {
       )}
       <label>Your name<input name="requesterName" required placeholder="Your name" /></label>
       <label>How can we contact you?
-        <span className="hint">Email or Instagram handle — we will only use it about this request.</span>
+        <span className="hint">Email or Instagram handle, we will only use it about this request.</span>
         <input name="contact" required placeholder="you@example.com or @yourhandle" />
       </label>
       <label>Reason for removal<textarea name="reason" rows={4} required placeholder="e.g. This is a photo of me and I would like it removed." /></label>
-      <button className="btn" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send takedown request'}</button>
-      <p className="count">We promise to act within 48 hours. You do not need an account, and you do not need to give a legal reason — “please remove it” is enough.</p>
+      <button className="btn" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send removal request'}</button>
+      <p className="count">We aim to act as soon as we can, usually within 48 hours. You do not need to give a legal reason, “please remove it” is enough.</p>
     </form>
   );
 }

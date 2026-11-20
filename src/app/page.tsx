@@ -28,31 +28,30 @@ export default async function HomePage() {
   return (
     <>
       <section className="hero">
-        <h2>Find the cosplayer, not the costume shop.</h2>
+        <h2>
+          Cosplay Horizons: A fan community of cosplayers of fandoms of all
+          kinds.
+        </h2>
         <p>
-          Cosplay Horizons is a searchable gallery of people who cosplay —
-          an endless horizon of different characters and different worlds, as
-          far as the eye can see.
+          This community is a place where anyone from all fandoms can share
+          their favorite cosplays and characters. We strive to be a welcoming
+          platform that is solely dedicated to having users present their
+          cosplays and express themselves in ways that continue to inspire
+          creativity in the community.
         </p>
-        <ul className="hero-points">
-          <li>
-            <strong>Search by character or cosplayer.</strong> Looking for
-            one character, one cosplayer, or one series — not a shop selling
-            costumes.
-          </li>
-          <li>
-            <strong>Opt-in only.</strong> Cosplayers submit their own photos,
-            and every look credits the cosplayer (and photographer, when
-            known) with their social links right there.
-          </li>
-          <li>
-            <strong>Easy takedown.</strong> Anyone can ask for a photo to be
-            removed — see <a href="/takedown">Takedown request</a>.
-          </li>
-        </ul>
+        <p>
+          Our main goal is to make cosplays easily searchable by characters,
+          series, or cosplayer, so you are not endlessly looking through
+          social media for the right inspiration.
+        </p>
+        <p>
+          Our platform respects creators so it is opt-in only, credit will
+          always be given whenever possible, and if you change your mind it
+          is a simple process.
+        </p>
         <p>
           <a className="cta" href="/submit">
-            Submit your cosplay →
+            Make a submission
           </a>
         </p>
       </section>

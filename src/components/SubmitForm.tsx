@@ -99,7 +99,7 @@ export default function SubmitForm() {
       return;
     }
     if (!data.get('consent')) {
-      setError('Please tick the consent box — we only publish photos with the cosplayer’s permission.');
+      setError('Please tick the confirmation box to submit.');
       return;
     }
     if (variantType === 'other' && !variantLabel.trim()) {
@@ -128,8 +128,8 @@ export default function SubmitForm() {
       }
       setSuccess(
         json.preview
-          ? 'Thanks — your submission was received in preview mode. It is not saved to a database yet: connect Supabase (see README) to save submissions for review.'
-          : 'Thanks — your submission was received and is waiting for review. We will only publish it after checking it.',
+          ? 'Thanks, your submission was received.'
+          : 'Thanks, your submission was received and is waiting for review. We will only publish it after checking it.',
       );
       form.reset();
       setFiles((prev) => {
@@ -154,11 +154,11 @@ export default function SubmitForm() {
       {success && <p className="success" role="status">{success}</p>}
 
       <label>
-        Photos — upload from your camera roll or files
+        Photos, upload from your camera roll or files
         <span className="hint">
           Up to {MAX_PHOTOS} photos, JPG, PNG, WebP, or GIF, up to 8 MB each.
           The first photo is the cover shown in the gallery; you can reorder
-          them below. These are the photos we will show — not a link.
+          them below. These are the photos we will show, not a link.
         </span>
         <input
           ref={inputRef}
@@ -221,7 +221,7 @@ export default function SubmitForm() {
         <legend>Variant</legend>
         {(
           [
-            ['traditional', 'Traditional — the usual look for this character'],
+            ['traditional', 'Traditional, the usual look for this character'],
             ['christmas', 'Christmas variant'],
             ['halloween', 'Halloween variant'],
             ['other', 'Other variant'],
@@ -286,12 +286,12 @@ export default function SubmitForm() {
       )}
       {noLastName && (
         <p className="count" role="status">
-          Noted — this character has no last name.
+          Noted, this character has no last name.
         </p>
       )}
       {showUnknownSingleNote && (
         <p className="count" role="status">
-          If this character has a last name, please add it — you can still
+          If this character has a last name, please add it, you can still
           submit with just a first name.
         </p>
       )}
@@ -311,17 +311,20 @@ export default function SubmitForm() {
         </datalist>
       </label>
       <label>Specific series
-        <span className="hint">Optional — the specific series, e.g. Trails in the Sky or Fire Emblem Fortune&apos;s Weave.</span>
-        <input name="series" list="specific-series-suggestions" placeholder="e.g. Trails in the Sky" />
+        <span className="hint">Optional, the specific series, e.g. Fire Emblem Three Houses.</span>
+        <input name="series" list="specific-series-suggestions" placeholder="e.g. Fire Emblem Three Houses" />
         <datalist id="specific-series-suggestions">
           {SERIES_LIST.map((s) => (
             <option key={s} value={s} />
           ))}
         </datalist>
       </label>
-      <label>Cosplayer name<input name="cosplayer" required placeholder="Your name, as you want it credited" /></label>
+      <label>Cosplayer display name
+        <span className="hint">This is the name shown publicly with your photo. Use your cosplay name, not your real name, if you prefer. For example, Camel Cosplays or XXX Cosplays.</span>
+        <input name="cosplayer" required placeholder="e.g. Camel Cosplays" />
+      </label>
       <label>Link to your Instagram post or profile
-        <span className="hint">Credit only — this link is shown next to your photo so people can find you. It is not used as the photo itself.</span>
+        <span className="hint">Credit only, this link is shown next to your photo so people can find you. It is not used as the photo itself.</span>
         <input name="instagramUrl" type="url" placeholder="https://www.instagram.com/yourhandle" />
       </label>
       <label>Event (optional)<input name="event" placeholder="e.g. Anime Expo 2026" /></label>
@@ -329,10 +332,10 @@ export default function SubmitForm() {
       <label>Photographer name (optional)<input name="photographer" placeholder="Who took the photo?" /></label>
       <label>Photographer social link (optional)<input name="photographerUrl" type="url" placeholder="https://www.instagram.com/photographer" /></label>
       <label className="check"><input type="checkbox" name="consent" required />
-        <span>I confirm this is my cosplay (or I have the cosplayer’s permission to submit it), and I understand Cosplay Horizons will show it publicly with credit, and will remove it if the cosplayer asks.</span>
+        <span>I confirm this is my cosplay and I understand Cosplay Horizons will show it publicly with credit, and will remove it if the cosplayer asks.</span>
       </label>
-      <button className="btn" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Submit my cosplay'}</button>
-      <p className="count">Submissions are reviewed before they appear in the gallery. No account is needed.</p>
+      <button className="btn" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send submission'}</button>
+      <p className="count">Submissions are reviewed before they appear in the gallery.</p>
     </form>
   );
 }

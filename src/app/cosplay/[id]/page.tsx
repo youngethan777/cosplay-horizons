@@ -41,7 +41,7 @@ export default async function CosplayDetailPage({
               className="placeholder"
               style={{ borderRadius: 14, border: '1px solid var(--line)' }}
               role="img"
-              aria-label={`Placeholder — photo coming soon for ${cosplay.character}`}
+              aria-label={`Placeholder, photo coming soon for ${cosplay.character}`}
             >
               <span className="big" aria-hidden="true">🎭</span>
               <strong>Photo coming soon</strong>
@@ -95,7 +95,7 @@ export default async function CosplayDetailPage({
                   cosplay.photographer
                 )
               ) : (
-                'Not listed — ask via the cosplayer’s Instagram'
+                'Not listed, ask via the cosplayer’s Instagram'
               )}
             </dd>
             {cosplay.notes && (
@@ -114,7 +114,7 @@ export default async function CosplayDetailPage({
             See more from {cosplay.cosplayerHandle} on Instagram →
           </a>
           <p style={{ marginTop: 16 }}>
-            <Link href={`/takedown?cosplayId=${cosplay.id}`}>
+            <Link href={`/remove?cosplayId=${cosplay.id}`}>
               Request removal of this photo
             </Link>
           </p>
