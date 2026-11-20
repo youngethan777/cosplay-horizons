@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { VariantType } from '@/lib/types';
 import { MAIN_SERIES_LIST, SERIES_LIST } from '@/lib/data';
 import { checkCharacterLastName } from '@/lib/known-characters';
@@ -66,6 +66,57 @@ async function compressPhoto(file: File): Promise<File> {
 
 type PreviewFile = { file: File; preview: string };
 
+type SocialPlatform =
+  | 'instagram'
+  | 'tiktok'
+  | 'x'
+  | 'youtube'
+  | 'facebook'
+  | 'bluesky'
+  | 'other';
+
+const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'x', label: 'X' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'bluesky', label: 'Bluesky' },
+  { value: 'other', label: 'Other' },
+];
+
+// Build a full credit link from a platform and a handle the user typed.
+// The user never has to type https://www. For Other, the field holds a
+// full link, and https:// is added when it is missing.
+function buildSocialUrl(platform: SocialPlatform, raw: string): string {
+  const value = raw.trim();
+  if (!value) return '';
+  if (platform === 'other') {
+    return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  }
+  const handle = value.replace(/^@+/, '').replace(/\s+/g, '');
+  if (!handle) return '';
+  switch (platform) {
+    case 'instagram':
+      return `https://www.instagram.com/${handle}`;
+    case 'tiktok':
+      return `https://www.tiktok.com/@${handle}`;
+    case 'x':
+      return `https://x.com/${handle}`;
+    case 'youtube':
+      return `https://www.youtube.com/@${handle}`;
+    case 'facebook':
+      return `https://www.facebook.com/${handle}`;
+    case 'bluesky':
+      return `https://bsky.app/profile/${handle}`;
+  }
+}
+
+// Short display form for the live preview, without the protocol prefix.
+function displaySocialUrl(url: string): string {
+  return url.replace(/^https?:\/\/(www\.)?/i, '');
+}
+
 export default function SubmitForm() {
   const [files, setFiles] = useState<PreviewFile[]>([]);
   const [character, setCharacter] = useState('');
@@ -74,14 +125,29 @@ export default function SubmitForm() {
   const [variantType, setVariantType] = useState<VariantType>('traditional');
   const [variantLabel, setVariantLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [cosplayerPlatform, setCosplayerPlatform] =
+    useState<SocialPlatform>('instagram');
+  const [cosplayerHandle, setCosplayerHandle] = useState('');
+  const [photographerPlatform, setPhotographerPlatform] =
+    useState<SocialPlatform>('instagram');
+  const [photographerHandle, setPhotographerHandle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const confirmationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (done) {
+      confirmationRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [done]);
 
   function addFiles(list: FileList | null) {
     if (!list) return;
     setError(null);
-    setSuccess(null);
     const incoming = Array.from(list);
     const valid: PreviewFile[] = [];
     for (const f of incoming) {
@@ -147,7 +213,6 @@ export default function SubmitForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
     const form = e.currentTarget;
     const data = new FormData(form);
     if (files.length === 0) {
@@ -171,6 +236,11 @@ export default function SubmitForm() {
     data.set('noLastName', noLastName ? 'true' : 'false');
     data.set('variantType', variantType);
     data.set('variantLabel', variantType === 'other' ? variantLabel.trim() : '');
+    data.set('instagramUrl', buildSocialUrl(cosplayerPlatform, cosplayerHandle));
+    data.set(
+      'photographerUrl',
+      buildSocialUrl(photographerPlatform, photographerHandle),
+    );
     setBusy(true);
     try {
       // Rebuild the photo fields in display order (first = cover), resizing
@@ -189,11 +259,6 @@ export default function SubmitForm() {
         }
         return;
       }
-      setSuccess(
-        json.preview
-          ? 'Thanks, your submission was received.'
-          : 'Thanks, your submission was received and is waiting for review. We will only publish it after checking it.',
-      );
       form.reset();
       setFiles((prev) => {
         prev.forEach((p) => URL.revokeObjectURL(p.preview));
@@ -204,6 +269,11 @@ export default function SubmitForm() {
       setCharacter('');
       setMainSeries('');
       setNoLastName(false);
+      setCosplayerPlatform('instagram');
+      setCosplayerHandle('');
+      setPhotographerPlatform('instagram');
+      setPhotographerHandle('');
+      setDone(true);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -211,10 +281,39 @@ export default function SubmitForm() {
     }
   }
 
+  if (done) {
+    return (
+      <div className="confirmation" role="status" ref={confirmationRef}>
+        <h2>You did it</h2>
+        <p>
+          Thanks, your submission was received and is waiting for review. We
+          will only publish it after checking it.
+        </p>
+        <div className="confirmation-actions">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setDone(false)}
+          >
+            Submit another cosplay
+          </button>
+          <a className="btn secondary" href="/">
+            Back to the gallery
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const cosplayerUrl = buildSocialUrl(cosplayerPlatform, cosplayerHandle);
+  const photographerUrl = buildSocialUrl(
+    photographerPlatform,
+    photographerHandle,
+  );
+
   return (
     <form className="stack" onSubmit={onSubmit}>
       {error && <p className="error" role="alert">{error}</p>}
-      {success && <p className="success" role="status">{success}</p>}
 
       <label>
         Photos, upload from your camera roll or files
@@ -387,14 +486,79 @@ export default function SubmitForm() {
         <span className="hint">This is the name shown publicly with your photo. Use your cosplay name, not your real name, if you prefer. For example, Camel Cosplays or XXX Cosplays.</span>
         <input name="cosplayer" required placeholder="e.g. Camel Cosplays" />
       </label>
-      <label>Link to your Instagram post or profile
-        <span className="hint">Credit only, this link is shown next to your photo so people can find you. It is not used as the photo itself.</span>
-        <input name="instagramUrl" type="url" placeholder="https://www.instagram.com/yourhandle" />
+      <label>Your social link (optional)
+        <span className="hint">This is the credit link for you, the cosplayer. It is shown next to your photo so people can find you. Pick your platform and type just your handle. No need to type the full link.</span>
+        <select
+          name="cosplayerPlatform"
+          value={cosplayerPlatform}
+          onChange={(e) => setCosplayerPlatform(e.target.value as SocialPlatform)}
+        >
+          {SOCIAL_PLATFORMS.map((p) => (
+            <option key={p.value} value={p.value}>{p.label}</option>
+          ))}
+        </select>
+        {cosplayerPlatform === 'other' ? (
+          <input
+            name="cosplayerHandle"
+            value={cosplayerHandle}
+            onChange={(e) => setCosplayerHandle(e.target.value)}
+            placeholder="example.com/yourpage"
+            aria-label="Full link"
+          />
+        ) : (
+          <input
+            name="cosplayerHandle"
+            value={cosplayerHandle}
+            onChange={(e) => setCosplayerHandle(e.target.value)}
+            placeholder="@yourhandle"
+            aria-label="Your handle"
+          />
+        )}
+        {cosplayerPlatform === 'other' && (
+          <span className="hint">Full link, for example example.com/yourpage. We will add https:// for you if it is missing.</span>
+        )}
+        {cosplayerUrl && (
+          <span className="hint">This will link to {displaySocialUrl(cosplayerUrl)}</span>
+        )}
       </label>
       <label>Event (optional)<input name="event" placeholder="e.g. Anime Expo 2026" /></label>
       <label>Date (optional)<input name="date" placeholder="e.g. Jul 2026" /></label>
       <label>Photographer name (optional)<input name="photographer" placeholder="Who took the photo?" /></label>
-      <label>Photographer social link (optional)<input name="photographerUrl" type="url" placeholder="https://www.instagram.com/photographer" /></label>
+      <label>Photographer social link (optional)
+        <span className="hint">This is the credit link for the photographer. Pick their platform and type just their handle. No need to type the full link.</span>
+        <select
+          name="photographerPlatform"
+          value={photographerPlatform}
+          onChange={(e) => setPhotographerPlatform(e.target.value as SocialPlatform)}
+        >
+          {SOCIAL_PLATFORMS.map((p) => (
+            <option key={p.value} value={p.value}>{p.label}</option>
+          ))}
+        </select>
+        {photographerPlatform === 'other' ? (
+          <input
+            name="photographerHandle"
+            value={photographerHandle}
+            onChange={(e) => setPhotographerHandle(e.target.value)}
+            placeholder="example.com/theirpage"
+            aria-label="Full link"
+          />
+        ) : (
+          <input
+            name="photographerHandle"
+            value={photographerHandle}
+            onChange={(e) => setPhotographerHandle(e.target.value)}
+            placeholder="@theirhandle"
+            aria-label="Photographer handle"
+          />
+        )}
+        {photographerPlatform === 'other' && (
+          <span className="hint">Full link, for example example.com/theirpage. We will add https:// for you if it is missing.</span>
+        )}
+        {photographerUrl && (
+          <span className="hint">This will link to {displaySocialUrl(photographerUrl)}</span>
+        )}
+      </label>
       <label className="check"><input type="checkbox" name="consent" required />
         <span>I confirm this is my cosplay and I understand Cosplay Horizons will show it publicly with credit, and will remove it if the cosplayer asks.</span>
       </label>
