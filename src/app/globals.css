@@ -170,12 +170,12 @@ form.stack input[type="checkbox"], form.stack input[type="radio"] { width: auto;
 .viewer-thumb img { width: 72px; height: 96px; object-fit: cover; display: block; }
 .preview-list { display: grid; gap: 10px; }
 .preview-item { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
-.preview-item img { width: 72px; height: 96px; object-fit: cover; border-radius: 8px; }
+.preview-item img { width: 72px; height: 96px; object-fit: cover; border-radius: 8px; flex: 0 0 auto; }
 .preview-item .meta { flex: 1; min-width: 0; font-size: 0.9rem; }
-.preview-item .meta p { margin: 0; overflow-wrap: anywhere; }
+.preview-item .meta p { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .preview-item .actions { display: flex; flex-direction: column; gap: 6px; }
 .preview-item .actions button { padding: 4px 8px; font-size: 0.85rem; }
-.cover-tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: #134e4a; }
+.cover-tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: #134e4a; white-space: nowrap; }
 fieldset.variant { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 8px; justify-items: start; text-align: left; }
 fieldset.variant legend { font-weight: 600; font-size: 0.95rem; padding: 0 6px; }
 fieldset.variant label { display: flex; gap: 8px; align-items: center; justify-content: flex-start; font-weight: 400; width: 100%; text-align: left; }
@@ -199,6 +199,6 @@ footer.site .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px; color
   .viewer-arrow { width: 44px; height: 44px; }
   .viewer-thumb img { width: 60px; height: 80px; }
   .preview-item { flex-wrap: wrap; }
-  .preview-item .actions { flex-direction: row; flex-wrap: wrap; }
+  .preview-item .actions { flex-direction: row; flex-wrap: wrap; flex-basis: 100%; }
   .btn, .cta { min-height: 44px; }
 }

@@ -7,9 +7,13 @@ import { checkCharacterLastName } from '@/lib/known-characters';
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_BYTES = 8 * 1024 * 1024;
 const MAX_PHOTOS = 5;
-const MAX_DIMENSION = 1600;
-const JPEG_QUALITY = 0.85;
+const MAX_DIMENSION = 1280;
+const JPEG_QUALITY = 0.8;
 const SMALL_BYTES = 1024 * 1024;
+// Keep the whole submission comfortably under the server request size
+// limit (roughly 4.5 MB). If the resized photos still add up to more
+// than this, they are resized again at lower quality.
+const TOTAL_MAX_BYTES = 4 * 1024 * 1024;
 
 // Resize and re-encode a photo in the browser before it is sent, so large
 // phone photos stay well under the server request size limit. The preview
@@ -18,7 +22,11 @@ const SMALL_BYTES = 1024 * 1024;
 // unchanged so the server validation message applies. GIF files are sent
 // unchanged so animation is not lost. PNG transparency is flattened onto
 // a white background by the JPEG export.
-async function compressPhoto(file: File): Promise<File> {
+async function compressPhoto(
+  file: File,
+  maxDimension: number = MAX_DIMENSION,
+  quality: number = JPEG_QUALITY,
+): Promise<File> {
   if (file.type === 'image/gif') return file;
   const url = URL.createObjectURL(file);
   try {
@@ -35,11 +43,11 @@ async function compressPhoto(file: File): Promise<File> {
     if (
       file.type === 'image/jpeg' &&
       file.size < SMALL_BYTES &&
-      longest <= MAX_DIMENSION
+      longest <= maxDimension
     ) {
       return file;
     }
-    const scale = Math.min(1, MAX_DIMENSION / longest);
+    const scale = Math.min(1, maxDimension / longest);
     const canvas = document.createElement('canvas');
     canvas.width = Math.max(1, Math.round(width * scale));
     canvas.height = Math.max(1, Math.round(height * scale));
@@ -49,7 +57,7 @@ async function compressPhoto(file: File): Promise<File> {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY),
+      canvas.toBlob(resolve, 'image/jpeg', quality),
     );
     if (!blob) return file;
     const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
@@ -62,6 +70,22 @@ async function compressPhoto(file: File): Promise<File> {
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+// Resize every selected photo, then check the combined size. Five detailed
+// photos can still add up past the server request limit, so if the total is
+// over TOTAL_MAX_BYTES the set is resized again at lower quality, and once
+// more at a smaller size if needed. Pass-through files (GIFs and small
+// JPEGs) count toward the total but are never re-encoded.
+async function compressAll(files: File[]): Promise<File[]> {
+  const totalSize = (arr: File[]) => arr.reduce((sum, f) => sum + f.size, 0);
+  const first = await Promise.all(files.map((f) => compressPhoto(f)));
+  if (totalSize(first) <= TOTAL_MAX_BYTES) return first;
+  const second = await Promise.all(
+    files.map((f) => compressPhoto(f, MAX_DIMENSION, 0.65)),
+  );
+  if (totalSize(second) <= TOTAL_MAX_BYTES) return second;
+  return Promise.all(files.map((f) => compressPhoto(f, 1024, 0.6)));
 }
 
 type PreviewFile = { file: File; preview: string };
@@ -244,10 +268,11 @@ export default function SubmitForm() {
     setBusy(true);
     try {
       // Rebuild the photo fields in display order (first = cover), resizing
-      // each photo first so the request stays under the server size limit.
+      // the photos first so the request stays under the server size limit.
       data.delete('photo');
-      for (const { file } of files) {
-        data.append('photo', await compressPhoto(file));
+      const compressed = await compressAll(files.map(({ file }) => file));
+      for (const file of compressed) {
+        data.append('photo', file);
       }
       const res = await fetch('/api/submissions', { method: 'POST', body: data });
       const json = await res.json().catch(() => ({}));
@@ -318,8 +343,8 @@ export default function SubmitForm() {
       <label>
         Photos, upload from your camera roll or files
         <span className="hint">
-          Up to {MAX_PHOTOS} photos, JPG, PNG, WebP, or GIF, up to 8 MB each.
-          Photos are resized automatically before they are sent. The first
+          Up to {MAX_PHOTOS} photos, JPG, PNG, WebP, or GIF. Photos are
+          resized automatically before they are sent. The first
           photo is the cover shown in the gallery; you can reorder them
           below. These are the photos we will show, not a link.
         </span>
