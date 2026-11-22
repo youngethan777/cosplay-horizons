@@ -25,6 +25,13 @@ export type RemovalNotice = {
   reason: string;
 };
 
+export type ContactNotice = {
+  name: string;
+  contact: string;
+  topic: string;
+  message: string;
+};
+
 async function sendNotice(subject: string, text: string, payload: unknown): Promise<void> {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.NOTIFY_EMAIL_FROM;
@@ -81,6 +88,24 @@ export async function notifyNewSubmission(notice: SubmissionNotice): Promise<voi
     `New Cosplay Horizons submission: ${notice.character}`,
     text,
     { type: 'submission', ...notice },
+  );
+}
+
+export async function notifyNewContactMessage(notice: ContactNotice): Promise<void> {
+  const text = [
+    'A new contact message came in on Cosplay Horizons.',
+    '',
+    `Topic: ${notice.topic}`,
+    `Name: ${notice.name || 'not given'}`,
+    `Reach them at: ${notice.contact || 'not given'}`,
+    `Message: ${notice.message}`,
+    '',
+    'Read it through the private admin API or the Supabase dashboard.',
+  ].join('\n');
+  await sendNotice(
+    `New Cosplay Horizons contact message: ${notice.topic}`,
+    text,
+    { type: 'contact', ...notice },
   );
 }
 

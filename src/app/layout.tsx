@@ -42,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/">Gallery</Link>
               <Link href="/submit">Submission</Link>
               <Link href="/remove">Remove</Link>
+              <Link href="/contact">Contact</Link>
             </div>
           </nav>
         </header>
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               different worlds.
             </span>
             <Link href="/privacy">Privacy &amp; Terms</Link>
+            <Link href="/contact">Contact</Link>
           </div>
         </footer>
         <Analytics />
