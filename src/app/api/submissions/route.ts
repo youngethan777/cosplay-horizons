@@ -3,6 +3,7 @@ import { getSupabaseAdminClient } from '@/lib/supabase';
 import { notifyNewSubmission } from '@/lib/notify';
 import { isVariantType } from '@/lib/types';
 import type { VariantType } from '@/lib/types';
+import { normalizeSocialUrl } from '@/lib/social-url';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -98,11 +99,16 @@ export async function POST(req: Request) {
     main_series: mainSeries || null,
     series,
     cosplayer,
-    instagram_url: String(form.get('instagramUrl') || '') || null,
+    // Credit links are normalized before storing, so a doubled address
+    // (a platform base URL stuck in front of a pasted full link) can
+    // never be saved. Clean single URLs pass through unchanged.
+    instagram_url:
+      normalizeSocialUrl(String(form.get('instagramUrl') || '')) || null,
     event: String(form.get('event') || '') || null,
     date: String(form.get('date') || '') || null,
     photographer: String(form.get('photographer') || '') || null,
-    photographer_url: String(form.get('photographerUrl') || '') || null,
+    photographer_url:
+      normalizeSocialUrl(String(form.get('photographerUrl') || '')) || null,
     // Legacy single-photo columns kept in sync with the cover (first photo).
     photo_path: photoPaths[0],
     photo_file_name: photoFileNames[0],

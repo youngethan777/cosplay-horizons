@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { VariantType } from '@/lib/types';
 import { MAIN_SERIES_LIST, SERIES_LIST } from '@/lib/data';
 import { checkCharacterLastName } from '@/lib/known-characters';
+import { extractHandle } from '@/lib/social-url';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -110,15 +111,18 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
 ];
 
 // Build a full credit link from a platform and a handle the user typed.
-// The user never has to type https://www. For Other, the field holds a
-// full link, and https:// is added when it is missing.
+// The user never has to type https://www. If they paste a full profile
+// link into the handle field anyway, extractHandle pulls just the
+// handle out of it, so the result is never a doubled address. For
+// Other, the field holds a full link, and https:// is added when it
+// is missing.
 function buildSocialUrl(platform: SocialPlatform, raw: string): string {
   const value = raw.trim();
   if (!value) return '';
   if (platform === 'other') {
     return /^https?:\/\//i.test(value) ? value : `https://${value}`;
   }
-  const handle = value.replace(/^@+/, '').replace(/\s+/g, '');
+  const handle = extractHandle(value);
   if (!handle) return '';
   switch (platform) {
     case 'instagram':
