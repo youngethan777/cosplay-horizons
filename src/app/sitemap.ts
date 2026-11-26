@@ -1,7 +1,7 @@
 import { loadCosplays } from '@/lib/supabase';
 
 export default async function sitemap() {
-  const base = 'https://cosplayhorizons.com';
+  const base = 'https://www.cosplayhorizons.com';
   const cosplays = await loadCosplays();
   return [
     { url: `${base}/`, lastModified: new Date() },

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'Cosplay Horizons: Find the cosplayer, not the costume shop',
   description:
     'A fan community of cosplayers of fandoms of all kinds. Search by character, series, or cosplayer, with clear credit and social links. An endless horizon of different characters and different worlds.',
-  metadataBase: new URL('https://cosplayhorizons.com'),
+  metadataBase: new URL('https://www.cosplayhorizons.com'),
   icons: { icon: '/logo.svg' },
   openGraph: {
     title: 'Cosplay Horizons',
